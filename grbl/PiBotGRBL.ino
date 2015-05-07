@@ -1,5 +1,4 @@
 /*
-  print.h - Functions for formatting output strings
   This file is part of PiBot-Firmware.
 
   PiBotGrbl-Firmware is free software: you can redistribute it and/or modify
@@ -24,40 +23,45 @@
 
    Main author: Simen Svale Skogsrud, Sungeun K. Jeon & Thomas Pan
    
-   mainpage PiBotGRBL-Firmware for Arduino based GRBL
-   Copyright (c) 2014 Sungeun K. Jeon
-   Copyright (c) 2014 by Thomas
-*/  
+   mainpage PiBot-Firmware for Arduino based GRBL
+    Copyright (c) 2009-2011 Simen Svale Skogsrud
+    Copyright (c) 2011-2013 Sungeun K. Jeon
+    Copyright (c) 2014 by Thomas
+*/
+/*
+   Supported hardware from config.h
+   	PiBot Controller Rev2.x   / 115200 bauds  (3 axis)
+       Arduino.ino  / 115200 bauds  (3 axis)
+	Arduino Mega 2560   / 115200 bauds  (3 axis)
+   Supported sofware
+        PiBot GRBL Controller V1.x
+   	GRBL Controller V3.x
 
-#ifndef print_h
-#define print_h
+*/
+/*
 
+Implemented Codes
 
-void printString(const char *s);
+- Non-Modal Commands: G4, G10 L2, G10 L20, G28, G30, G28.1, G30.1, G53, G92, G92.1
+- Motion Modes: G0, G1, G2, G3, G38.1, G80
+- Feed Rate Modes: G93, G94
+- Unit Modes: G20, G21
+- Distance Modes: G90, G91
+- Plane Select Modes: G17, G18, G19
+- Tool Length Offset Modes: G43.1, G49
+- Coordinate System Modes: G54, G55, G56, G57, G58, G59
+- Program Flow: M0, M1, M2, M30*
+- Coolant Control: M7*, M8, M9
+- Spindle Control: M3, M4, M5
 
-void printPgmString(const char *s);
+*/
 
-void printInteger(long n);
+#include "PiBot.h"
 
-void print_uint32_base10(uint32_t n);
+void setup()
+{
+  main();
+}
 
-void print_uint8_base2(uint8_t n);
-
-void print_uint8_base10(uint8_t n);
-
-void printFloat(float n, uint8_t decimal_places);
-
-// Floating value printing handlers for special variables types used in Grbl. 
-//  - CoordValue: Handles all position or coordinate values in inches or mm reporting.
-//  - RateValue: Handles feed rate and current velocity in inches or mm reporting.
-//  - SettingValue: Handles all floating point settings values (always in mm.)
-void printFloat_CoordValue(float n);
-
-void printFloat_RateValue(float n);
-
-void printFloat_SettingValue(float n);
-
-// Debug tool to print free memory in bytes at the called point. Not used otherwise.
-void printFreeMemory();
-
-#endif
+void loop()
+{}

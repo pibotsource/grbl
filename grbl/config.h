@@ -1,25 +1,29 @@
 /*
   config.h - compile time configuration
-  Part of Grbl
+	  This file is part of PiBotGRBL-Firmware.
+	
+	  PiBotGRBL-Firmware is free software: you can redistribute it and/or modify
+	  it under the terms of the GNU General Public License as published by
+	  the Free Software Foundation, either version 3 of the License, or
+	  (at your option) any later version.
+	
+	  At the same time you have to follow the rules of PiBot.
+	
+	  PiBotGRBL-Firmware is distributed in the hope that it will be useful,
+	  but WITHOUT ANY WARRANTY; without even the implied warranty of
+	  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+	  GNU General Public License for more details.
+	  
+	   You should have received a copy of both the GNU General Public License 
+	   and PiBot License along with PiBot-Firmware.  
+	   If not, see <http://www.gnu.org/licenses/> and <http://www.pibot.com/>.
+	
+	  PiBotGRBL-Firmware is based on the official PiBotGRBL. We change it for the goal
+	  of easy use and configuration. It compatible with both of orignal GRBL settings 
+	  and PiBot quick setting style.
+	*/ 
 
-  Copyright (c) 2012-2015 Sungeun K. Jeon
-  Copyright (c) 2009-2011 Simen Svale Skogsrud
-
-  Grbl is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Grbl is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
-*/
-  
-// This file contains compile-time configurations for Grbl's internal system. For the most part,
+// This file contains compile-time configurations for PiBotGRBL's internal system. For the most part,
 // users will not need to directly modify these, but they are here for specific needs, i.e.
 // performance tuning or adjusting to non-typical machines.
 
@@ -27,7 +31,7 @@
 
 #ifndef config_h
 #define config_h
-#include "grbl.h" // For Arduino IDE compatibility.
+#include "system.h"
 
 
 // Default settings. Used when resetting EEPROM. Change to desired name in defaults.h
@@ -36,12 +40,96 @@
 // Serial baud rate
 #define BAUD_RATE 115200
 
-// Default cpu mappings. Grbl officially supports the Arduino Uno only. Other processor types
+// Default cpu mappings. PiBotGRBL officially supports the Arduino Uno only. Other processor types
 // may exist from user-supplied templates or directly user-defined in cpu_map.h
-#define CPU_MAP_ATMEGA328P // Arduino Uno CPU
+// Default cpu mappings. PiBotGRBL officially supports the Arduino Uno only. Other processor types
+// may exist from user-supplied templates or directly user-defined in cpu_map.h
+/*
+* Controller board type define
+* Arduino Uno CPU                         =1
+* Arduino Mega 2560 or Mega ADK  =2
+* PiBot Mega 2560                          =3
+*/
+#define MotherBoard 3    //***  2->3
 
-// Define realtime command special characters. These characters are 'picked-off' directly from the
-// serial read data stream and are not passed to the grbl line execution parser. Select characters
+/*********for PiBot Controller Version 
+* PiBot Controller 	V1.4-V1.6           =1
+* PiBot Controller   Rev2.0-              =2
+*/
+#define PiBot_HD_REV 2
+
+//#define CPU_MAP_ATMEGA328P_TRADITIONAL // Arduino Uno CPU
+
+//////##########################PiBot config
+#define PROBE_ENABLE true
+#if MotherBoard==3
+#define PROBE_INVERTING false   /////****make same logic with mahcine probe -logic
+
+///#############################
+//////****endstop style
+#define limit_int_style 
+///////**********ENDSTOP, the MAX inverting with the same inverting with the MIN's.
+#define ENDSTOP_X_MIN_INVERTING true
+#define ENDSTOP_Y_MIN_INVERTING true
+#define ENDSTOP_Z_MIN_INVERTING true
+////////*******use to control MAX limit feature
+#define LIMIT_MAX_OPEN true      ////****only for PiBot
+#define ENDSTOP_X_MAX_INVERTING true
+#define ENDSTOP_Y_MAX_INVERTING true
+#define ENDSTOP_Z_MAX_INVERTING true
+
+#define SPINDLE_ENABLE_INVERTING true
+#define COOLANT_FLOOD_INVERTING false
+#define COOLANT_MIST_INVERTING  false
+
+///////#######****define for the second stepper driver (only for PiBot), if only one motor define "false"
+#if PiBot_HD_REV==1       ///////**** Both the fourth, fifth and sixth Driver are assigned
+#define FEATURE_SECOND_X true
+#define FEATURE_SECOND_Y true
+#define FEATURE_SECOND_Z true
+#endif
+
+#if PiBot_HD_REV==2    //////****the fourth Driver  is reserved for A-axis, only the fifth Driver had been assigned in pins.h
+#define FEATURE_SECOND_X false
+#define FEATURE_SECOND_Y true
+#define FEATURE_SECOND_Z false
+#endif
+/////////////////////////////////##################********************
+#define X_DRIVER_DIR_INVERTING	true    //////**** work only in PiBot Controller
+#define Y_DRIVER_DIR_INVERTING	true    /////****  Stepper Motor direction inverting
+#define Z_DRIVER_DIR_INVERTING	false
+
+/////////******* the second stepper motor driver derection inverting
+#if FEATURE_SECOND_X
+#define X_DRIVER_SECOND_DIR_INVERTING	true    //////***work only in PiBot Controller
+#endif
+#if FEATURE_SECOND_Y
+#define Y_DRIVER_SECOND_DIR_INVERTING	true    //////***work only in PiBot Controller
+#endif
+#if FEATURE_SECOND_Z
+#define Z_DRIVER_SECOND_DIR_INVERTING	false    //////***work only in PiBot Controller
+#endif
+
+
+//define for enable signal logic Setting       HIGH/true:  1 , 5V     and    LOW/false  0 , GND
+#define X_DRIVER_EN_LOGIC	LOW    //////***work only in PiBot Controller
+#define Y_DRIVER_EN_LOGIC	LOW
+#define Z_DRIVER_EN_LOGIC	LOW
+#if FEATURE_SECOND_X
+#define X2_DRIVER_EN_LOGIC	LOW    //////***work only in PiBot Controller
+#endif
+#if FEATURE_SECOND_Y
+#define Y2_DRIVER_EN_LOGIC	LOW    //////***work only in PiBot Controller
+#endif
+#if FEATURE_SECOND_Z
+#define Z2_DRIVER_EN_LOGIC	LOW    //////***work only in PiBot Controller
+#endif
+/////##############################
+#endif
+
+
+// Define runtime command special characters. These characters are 'picked-off' directly from the
+// serial read data stream and are not passed to the PiBotGRBL line execution parser. Select characters
 // that do not and must not exist in the streamed g-code program. ASCII control characters may be 
 // used, if they are available per user setup. Also, extended ASCII codes (>127), which are never in 
 // g-code programs, maybe selected for interface programs.
@@ -50,11 +138,10 @@
 #define CMD_FEED_HOLD '!'
 #define CMD_CYCLE_START '~'
 #define CMD_RESET 0x18 // ctrl-x.
-#define CMD_SAFETY_DOOR '@'
 
-// If homing is enabled, homing init lock sets Grbl into an alarm state upon power up. This forces
+// If homing is enabled, homing init lock sets PiBotGRBL into an alarm state upon power up. This forces
 // the user to perform the homing cycle (or override the locks) before doing anything else. This is
-// mainly a safety feature to remind the user to home, since position is unknown to Grbl.
+// mainly a safety feature to remind the user to home, since position is unknown to PiBotGRBL.
 #define HOMING_INIT_LOCK // Comment to disable
 
 // Define the homing cycle patterns with bitmasks. The homing cycle first performs a search mode
@@ -72,27 +159,38 @@
 // on separate pin, but homed in one cycle. Also, it should be noted that the function of hard limits 
 // will not be affected by pin sharing.
 // NOTE: Defaults are set for a traditional 3-axis CNC machine. Z-axis first to clear, followed by X & Y.
+#if MotherBoard==3
+#ifdef limit_int_style 
 #define HOMING_CYCLE_0 (1<<Z_AXIS)                // REQUIRED: First move Z to clear workspace.
-#define HOMING_CYCLE_1 ((1<<X_AXIS)|(1<<Y_AXIS))  // OPTIONAL: Then move X,Y at the same time.
+#define HOMING_CYCLE_1 ((1<<X_AXIS)|(1<<Y_AXIS))   // OPTIONAL: Then move X,Y at the same time.
+#else
+#define HOMING_CYCLE_0 (1<<Z_AXIS)                // REQUIRED: First move Z to clear workspace.
+#define HOMING_CYCLE_1 (1<<X_AXIS)              ////**** ((1<<X_AXIS)|(1<<Y_AXIS))  // OPTIONAL: Then move X,Y at the same time.
+#define HOMING_CYCLE_2 (1<<Y_AXIS)
+#endif
+#else
+#define HOMING_CYCLE_0 (1<<Z_AXIS)                // REQUIRED: First move Z to clear workspace.
+#define HOMING_CYCLE_1 ((1<<X_AXIS)|(1<<Y_AXIS))   // OPTIONAL: Then move X,Y at the same time.
 // #define HOMING_CYCLE_2                         // OPTIONAL: Uncomment and add axes mask to enable
+#endif
 
 // Number of homing cycles performed after when the machine initially jogs to limit switches.
 // This help in preventing overshoot and should improve repeatability. This value should be one or 
 // greater.
 #define N_HOMING_LOCATE_CYCLE 2 // Integer (1-128)
 
-// After homing, Grbl will set by default the entire machine space into negative space, as is typical
+// After homing, PiBotGRBL will set by default the entire machine space into negative space, as is typical
 // for professional CNC machines, regardless of where the limit switches are located. Uncomment this 
-// define to force Grbl to always set the machine origin at the homed location despite switch orientation.
-// #define HOMING_FORCE_SET_ORIGIN // Uncomment to enable.
+// define to force PiBotGRBL to always set the machine origin at the homed location despite switch orientation.
+#define HOMING_FORCE_SET_ORIGIN // Uncomment to enable.   //////********  //
 
-// Number of blocks Grbl executes upon startup. These blocks are stored in EEPROM, where the size
+// Number of blocks PiBotGRBL executes upon startup. These blocks are stored in EEPROM, where the size
 // and addresses are defined in settings.h. With the current settings, up to 2 startup blocks may
 // be stored and executed in order. These startup blocks would typically be used to set the g-code
 // parser state depending on user preferences.
 #define N_STARTUP_LINE 2 // Integer (1-2)
 
-// Number of floating decimal points printed by Grbl for certain value types. These settings are 
+// Number of floating decimal points printed by PiBotGRBL for certain value types. These settings are 
 // determined by realistic and commonly observed values in CNC machines. For example, position
 // values cannot be less than 0.001mm or 0.0001in, because machines can not be physically more
 // precise this. So, there is likely no need to change these, but you can if you need to here.
@@ -103,95 +201,27 @@
 #define N_DECIMAL_RATEVALUE_MM    0 // Rate or velocity value in mm/min
 #define N_DECIMAL_SETTINGVALUE    3 // Decimals for floating point setting values
 
-// If your machine has two limits switches wired in parallel to one axis, you will need to enable
-// this feature. Since the two switches are sharing a single pin, there is no way for Grbl to tell
-// which one is enabled. This option only effects homing, where if a limit is engaged, Grbl will 
-// alarm out and force the user to manually disengage the limit switch. Otherwise, if you have one
-// limit switch for each axis, don't enable this option. By keeping it disabled, you can perform a
-// homing cycle while on the limit switch and not have to move the machine off of it.
-// #define LIMITS_TWO_SWITCHES_ON_AXES
-
-// Allows GRBL to track and report gcode line numbers.  Enabling this means that the planning buffer
+// Allows PiBotGRBL to track and report gcode line numbers.  Enabling this means that the planning buffer
 // goes from 18 or 16 to make room for the additional line number data in the plan_block_t struct
 // #define USE_LINE_NUMBERS // Disabled by default. Uncomment to enable.
 
-// Allows GRBL to report the real-time feed rate.  Enabling this means that GRBL will be reporting more 
+// Allows PiBotGRBL to report the real-time feed rate.  Enabling this means that PiBotGRBL will be reporting more 
 // data with each status update.
 // NOTE: This is experimental and doesn't quite work 100%. Maybe fixed or refactored later.
 // #define REPORT_REALTIME_RATE // Disabled by default. Uncomment to enable.
 
 // Upon a successful probe cycle, this option provides immediately feedback of the probe coordinates
 // through an automatically generated message. If disabled, users can still access the last probe
-// coordinates through Grbl '$#' print parameters.
+// coordinates through PiBotGRBL '$#' print parameters.
 #define MESSAGE_PROBE_COORDINATES // Enabled by default. Comment to disable.
  
 // Enables a second coolant control pin via the mist coolant g-code command M7 on the Arduino Uno
 // analog pin 5. Only use this option if you require a second coolant control pin.
 // NOTE: The M8 flood coolant control pin on analog pin 4 will still be functional regardless.
-// #define ENABLE_M7 // Disabled by default. Uncomment to enable.
-
-// This option causes the feed hold input to act as a safety door switch. A safety door, when triggered,
-// immediately forces a feed hold and then safely de-energizes the machine. Resuming is blocked until
-// the safety door is re-engaged. When it is, Grbl will re-energize the machine and then resume on the
-// previous tool path, as if nothing happened.
-// #define ENABLE_SAFETY_DOOR_INPUT_PIN // Default disabled. Uncomment to enable.
-
-// After the safety door switch has been toggled and restored, this setting sets the power-up delay
-// between restoring the spindle and coolant and resuming the cycle.
-// NOTE: Delay value is defined in milliseconds from zero to 65,535. 
-#define SAFETY_DOOR_SPINDLE_DELAY 4000
-#define SAFETY_DOOR_COOLANT_DELAY 1000
-
-// Enable CoreXY kinematics. Use ONLY with CoreXY machines. 
-// IMPORTANT: If homing is enabled, you must reconfigure the homing cycle #defines above to 
-// #define HOMING_CYCLE_0 (1<<X_AXIS) and #define HOMING_CYCLE_1 (1<<Y_AXIS)
-// NOTE: This configuration option alters the motion of the X and Y axes to principle of operation
-// defined at (http://corexy.com/theory.html). Motors are assumed to positioned and wired exactly as
-// described, if not, motions may move in strange directions. Grbl assumes the CoreXY A and B motors
-// have the same steps per mm internally.
-// #define COREXY // Default disabled. Uncomment to enable.
-
-// Inverts pin logic of the control command pins. This essentially means when this option is enabled
-// you can use normally-closed switches, rather than the default normally-open switches.
-// NOTE: Will eventually be added to Grbl settings in v1.0.
-// #define INVERT_CONTROL_PIN // Default disabled. Uncomment to enable.
-
-// Inverts the spindle enable pin from low-disabled/high-enabled to low-enabled/high-disabled. Useful
-// for some pre-built electronic boards.
-// NOTE: If VARIABLE_SPINDLE is enabled(default), this option has no effect as the PWM output and 
-// spindle enable are combined to one pin. If you need both this option and spindle speed PWM, 
-// uncomment the config option USE_SPINDLE_DIR_AS_ENABLE_PIN below.
-// #define INVERT_SPINDLE_ENABLE_PIN // Default disabled. Uncomment to enable.
-
-// Enable limit pin states feedback in status reports. The data is presented as 0 (low) or 1(high), 
-// where the order is XYZ. For example, if the Y- and Z-limit pins are active, Grbl will include the 
-// following string in the status report "Lim:011". This is generally useful for setting up a new
-// CNC machine, but we do not recommend keeping this option enabled, as it will consume CPU resources
-// with little to no benefit during normal operation and it may not be supported by most GUIs.
-// #define REPORT_LIMIT_PIN_STATE // Default disabled. Uncomment to enable.
-
-// Enable control pin states feedback in status reports. The data is presented as simple binary of
-// the control pin port (0 (low) or 1(high)), masked to show only the input pins. Non-control pins on the 
-// port will always show a 0 value. See cpu_map.h for the pin bitmap. As with the limit pin reporting,
-// we do not recommend keeping this option enabled. Try to only use this for setting up a new CNC.
-// #define REPORT_CONTROL_PIN_STATE // Default disabled. Uncomment to enable.
-
-// When Grbl powers-cycles or is hard reset with the Arduino reset button, Grbl boots up with no ALARM
-// by default. This is to make it as simple as possible for new users to start using Grbl. When homing
-// is enabled and a user has installed limit switches, Grbl will boot up in an ALARM state to indicate 
-// Grbl doesn't know its position and to force the user to home before proceeding. This option forces
-// Grbl to always initialize into an ALARM state regardless of homing or not. This option is more for
-// OEMs and LinuxCNC users that would like this power-cycle behavior.
-// #define FORCE_INITIALIZATION_ALARM // Default disabled. Uncomment to enable.
+#define ENABLE_M7 // Disabled by default. Uncomment to enable.   ///***********  //
 
 // ---------------------------------------------------------------------------------------
 // ADVANCED CONFIGURATION OPTIONS:
-
-// Enables minimal reporting feedback mode for GUIs, where human-readable strings are not as important.
-// This saves nearly 2KB of flash space and may allow enough space to install other/future features.
-// GUIs will need to install a look-up table for the error-codes that Grbl sends back in their place.
-// NOTE: This feature is new and experimental. Make sure the GUI you are using supports this mode.
-// #define REPORT_GUI_MODE // Default disabled. Uncomment to enable.
 
 // The temporal resolution of the acceleration management subsystem. A higher number gives smoother
 // acceleration, particularly noticeable on machines that run at very high feedrates, but may negatively
@@ -209,30 +239,6 @@
 // step smoothing. See stepper.c for more details on the AMASS system works.
 #define ADAPTIVE_MULTI_AXIS_STEP_SMOOTHING  // Default enabled. Comment to disable.
 
-// Sets the maximum step rate allowed to be written as a Grbl setting. This option enables an error 
-// check in the settings module to prevent settings values that will exceed this limitation. The maximum
-// step rate is strictly limited by the CPU speed and will change if something other than an AVR running
-// at 16MHz is used.
-// NOTE: For now disabled, will enable if flash space permits.
-// #define MAX_STEP_RATE_HZ 30000 // Hz
-
-// By default, Grbl sets all input pins to normal-high operation with their internal pull-up resistors
-// enabled. This simplifies the wiring for users by requiring only a switch connected to ground, 
-// although its recommended that users take the extra step of wiring in low-pass filter to reduce
-// electrical noise detected by the pin. If the user inverts the pin in Grbl settings, this just flips
-// which high or low reading indicates an active signal. In normal operation, this means the user 
-// needs to connect a normal-open switch, but if inverted, this means the user should connect a 
-// normal-closed switch. 
-// The following options disable the internal pull-up resistors, sets the pins to a normal-low 
-// operation, and switches must be now connect to Vcc instead of ground. This also flips the meaning 
-// of the invert pin Grbl setting, where an inverted setting now means the user should connect a 
-// normal-open switch and vice versa.
-// NOTE: All pins associated with the feature are disabled, i.e. XYZ limit pins, not individual axes.
-// WARNING: When the pull-ups are disabled, this requires additional wiring with pull-down resistors!
-//#define DISABLE_LIMIT_PIN_PULL_UP
-//#define DISABLE_PROBE_PIN_PULL_UP
-//#define DISABLE_CONTROL_PIN_PULL_UP
-
 // Sets which axis the tool length offset is applied. Assumes the spindle is always parallel with 
 // the selected axis with the tool oriented toward the negative direction. In other words, a positive
 // tool length offset value is subtracted from the current location.
@@ -242,37 +248,15 @@
 // enable pin will output 5V for maximum RPM with 256 intermediate levels and 0V when disabled.
 // NOTE: IMPORTANT for Arduino Unos! When enabled, the Z-limit pin D11 and spindle enable pin D12 switch!
 // The hardware PWM output on pin D11 is required for variable spindle output voltages.
-#define VARIABLE_SPINDLE // Default enabled. Comment to disable.
+// #define VARIABLE_SPINDLE // Default disabled. Uncomment to enable.
 
-// Used by the variable spindle output only. These parameters set the maximum and minimum spindle speed
+// Use by the variable spindle output only. These parameters set the maximum and minimum spindle speed
 // "S" g-code values to correspond to the maximum and minimum pin voltages. There are 256 discrete and 
 // equally divided voltage bins between the maximum and minimum spindle speeds. So for a 5V pin, 1000
 // max rpm, and 250 min rpm, the spindle output voltage would be set for the following "S" commands: 
 // "S1000" @ 5V, "S250" @ 0.02V, and "S625" @ 2.5V (mid-range). The pin outputs 0V when disabled.
 #define SPINDLE_MAX_RPM 1000.0 // Max spindle RPM. This value is equal to 100% duty cycle on the PWM.
 #define SPINDLE_MIN_RPM 0.0    // Min spindle RPM. This value is equal to (1/256) duty cycle on the PWM.
-
-// Used by variable spindle output only. This forces the PWM output to a minimum duty cycle when enabled.
-// When disabled, the PWM pin will still read 0V. Most users will not need this option, but it may be 
-// useful in certain scenarios. This setting does not update the minimum spindle RPM calculations. Any
-// spindle RPM output lower than this value will be set to this value.
-// #define MINIMUM_SPINDLE_PWM 5 // Default disabled. Uncomment to enable. Integer (0-255)
-
-// By default on a 328p(Uno), Grbl combines the variable spindle PWM and the enable into one pin to help 
-// preserve I/O pins. For certain setups, these may need to be separate pins. This configure option uses
-// the spindle direction pin(D13) as a separate spindle enable pin along with spindle speed PWM on pin D11. 
-// NOTE: This configure option only works with VARIABLE_SPINDLE enabled and a 328p processor (Uno). 
-// NOTE: With no direction pin, the spindle clockwise M4 g-code command will be removed. M3 and M5 still work.
-// #define USE_SPINDLE_DIR_AS_ENABLE_PIN // Default disabled. Uncomment to enable.
-
-// With this enabled, Grbl sends back an echo of the line it has received, which has been pre-parsed (spaces
-// removed, capitalized letters, no comments) and is to be immediately executed by Grbl. Echoes will not be 
-// sent upon a line buffer overflow, but should for all normal lines sent to Grbl. For example, if a user 
-// sendss the line 'g1 x1.032 y2.45 (test comment)', Grbl will echo back in the form '[echo: G1X1.032Y2.45]'.
-// NOTE: Only use this for debugging purposes!! When echoing, this takes up valuable resources and can effect
-// performance. If absolutely needed for normal operation, the serial write buffer should be greatly increased
-// to help minimize transmission waiting within the serial write protocol.
-// #define REPORT_ECHO_LINE_RECEIVED // Default disabled. Uncomment to enable.
 
 // Minimum planner junction speed. Sets the default minimum junction speed the planner plans to at
 // every buffer block junction, except for starting from rest and end of the buffer, which are always
@@ -284,8 +268,7 @@
 
 // Sets the minimum feed rate the planner will allow. Any value below it will be set to this minimum
 // value. This also ensures that a planned motion always completes and accounts for any floating-point
-// round-off errors. Although not recommended, a lower value than 1.0 mm/min will likely work in smaller
-// machines, perhaps to 0.1mm/min, but your success may vary based on multiple factors.
+// round-off errors. A lower value than 1.0 mm/min may work in some cases, but we don't recommend it.
 #define MINIMUM_FEED_RATE 1.0 // (mm/min)
 
 // Number of arc generation iterations by small angle approximation before exact arc trajectory 
@@ -293,16 +276,6 @@
 // are issues with the accuracy of the arc generations, or increased if arc execution is getting
 // bogged down by too many trig calculations. 
 #define N_ARC_CORRECTION 12 // Integer (1-255)
-
-// The arc G2/3 g-code standard is problematic by definition. Radius-based arcs have horrible numerical 
-// errors when arc at semi-circles(pi) or full-circles(2*pi). Offset-based arcs are much more accurate 
-// but still have a problem when arcs are full-circles (2*pi). This define accounts for the floating 
-// point issues when offset-based arcs are commanded as full circles, but get interpreted as extremely
-// small arcs with around machine epsilon (1.2e-7rad) due to numerical round-off and precision issues.
-// This define value sets the machine epsilon cutoff to determine if the arc is a full-circle or not.
-// NOTE: Be very careful when adjusting this value. It should always be greater than 1.2e-7 but not too
-// much greater than this. The default setting should capture most, if not all, full arc error situations.
-#define ARC_ANGULAR_TRAVEL_EPSILON 5E-7 // Float (radians)
 
 // Time delay increments performed during a dwell. The default value is set at 50ms, which provides
 // a maximum time delay of roughly 55 minutes, more than enough for most any application. Increasing
@@ -312,7 +285,7 @@
 #define DWELL_TIME_STEP 50 // Integer (1-255) (milliseconds)
 
 // Creates a delay between the direction pin setting and corresponding step pulse by creating
-// another interrupt (Timer2 compare) to manage it. The main Grbl interrupt (Timer1 compare) 
+// another interrupt (Timer2 compare) to manage it. The main PiBotGRBL interrupt (Timer1 compare) 
 // sets the direction pins, and does not immediately set the stepper pins, as it would in 
 // normal operation. The Timer2 compare fires next to set the stepper pins after the step 
 // pulse delay time, and Timer2 overflow will complete the step pulse, except now delayed 
@@ -323,7 +296,7 @@
 // #define STEP_PULSE_DELAY 10 // Step pulse delay in microseconds. Default disabled.
 
 // The number of linear motions in the planner buffer to be planned at any give time. The vast
-// majority of RAM that Grbl uses is based on this buffer size. Only increase if there is extra 
+// majority of RAM that PiBotGRBL uses is based on this buffer size. Only increase if there is extra 
 // available RAM, like when re-compiling for a Mega or Sanguino. Or decrease if the Arduino
 // begins to crash due to the lack of available RAM or if the CPU is having trouble keeping
 // up with planning new incoming motions as they are executed. 
@@ -333,7 +306,7 @@
 // and the planner blocks. Each segment is set of steps executed at a constant velocity over a
 // fixed time defined by ACCELERATION_TICKS_PER_SECOND. They are computed such that the planner
 // block velocity profile is traced exactly. The size of this buffer governs how much step 
-// execution lead time there is for other Grbl processes have to compute and do their thing 
+// execution lead time there is for other PiBotGRBL processes have to compute and do their thing 
 // before having to come back and refill this buffer, currently at ~50msec of step moves.
 // #define SEGMENT_BUFFER_SIZE 6 // Uncomment to override default in stepper.h.
 
@@ -348,11 +321,11 @@
 // #define LINE_BUFFER_SIZE 80  // Uncomment to override default in protocol.h
   
 // Serial send and receive buffer size. The receive buffer is often used as another streaming
-// buffer to store incoming blocks to be processed by Grbl when its ready. Most streaming
+// buffer to store incoming blocks to be processed by PiBotGRBL when its ready. Most streaming
 // interfaces will character count and track each block send to each block response. So, 
 // increase the receive buffer if a deeper receive buffer is needed for streaming and avaiable
-// memory allows. The send buffer primarily handles messages in Grbl. Only increase if large
-// messages are sent and Grbl begins to stall, waiting to send the rest of the message.
+// memory allows. The send buffer primarily handles messages in PiBotGRBL. Only increase if large
+// messages are sent and PiBotGRBL begins to stall, waiting to send the rest of the message.
 // NOTE: Buffer size values must be greater than zero and less than 256.
 // #define RX_BUFFER_SIZE 128 // Uncomment to override defaults in serial.h
 // #define TX_BUFFER_SIZE 64
@@ -364,7 +337,7 @@
 // using specifically-programmed UI's to manage this latency problem has been confirmed to work.
 // As well as, older FTDI FT232RL-based Arduinos(Duemilanove) are known to work with standard
 // terminal programs since their firmware correctly manage these XON/XOFF characters. In any
-// case, please report any successes to grbl administrators!
+// case, please report any successes to PiBotGRBL administrators!
 // #define ENABLE_XONXOFF // Default disabled. Uncomment to enable.
 
 // A simple software debouncing feature for hard limit switches. When enabled, the interrupt 
@@ -374,33 +347,22 @@
 // electrical interference on the signal cables from external sources. It's recommended to first
 // use shielded signal cables with their shielding connected to ground (old USB/computer cables 
 // work well and are cheap to find) and wire in a low-pass circuit into each limit pin.
-// #define ENABLE_SOFTWARE_DEBOUNCE // Default disabled. Uncomment to enable.
+ #define ENABLE_SOFTWARE_DEBOUNCE // Default disabled. Uncomment to enable.   /////**** added this option
 
-// Force Grbl to check the state of the hard limit switches when the processor detects a pin
-// change inside the hard limit ISR routine. By default, Grbl will trigger the hard limits
-// alarm upon any pin change, since bouncing switches can cause a state check like this to 
-// misread the pin. When hard limits are triggered, they should be 100% reliable, which is the
-// reason that this option is disabled by default. Only if your system/electronics can guarantee
-// that the switches don't bounce, we recommend enabling this option. This will help prevent
-// triggering a hard limit when the machine disengages from the switch.
-// NOTE: This option has no effect if SOFTWARE_DEBOUNCE is enabled.
-// #define HARD_LIMIT_FORCE_STATE_CHECK // Default disabled. Uncomment to enable.
+/////////////////////////////////////////###############################**************
+#include "pins.h"
+///////////////////////////////////////////////###########################***************
 
+// ---------------------------------------------------------------------------------------
+
+// TODO: Install compile-time option to send numeric status codes rather than strings.
 
 // ---------------------------------------------------------------------------------------
 // COMPILE-TIME ERROR CHECKING OF DEFINE VALUES:
 
-#ifndef HOMING_CYCLE_0
-  #error "Required HOMING_CYCLE_0 not defined."
-#endif
-
-#if defined(USE_SPINDLE_DIR_AS_ENABLE_PIN) && !defined(VARIABLE_SPINDLE)
-  #error "USE_SPINDLE_DIR_AS_ENABLE_PIN may only be used with VARIABLE_SPINDLE enabled"
-#endif
-
-#if defined(USE_SPINDLE_DIR_AS_ENABLE_PIN) && !defined(CPU_MAP_ATMEGA328P)
-  #error "USE_SPINDLE_DIR_AS_ENABLE_PIN may only be used with a 328p processor"
-#endif
+// #if (ISR_TICKS_PER_ACCELERATION_TICK > 255)
+// #error Parameters ACCELERATION_TICKS / ISR_TICKS must be < 256 to prevent integer overflow.
+// #endif
 
 // ---------------------------------------------------------------------------------------
 

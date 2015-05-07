@@ -1,27 +1,37 @@
 /*
   motion_control.h - high level interface for issuing motion commands
-  Part of Grbl
+  This file is part of PiBot-Firmware.
 
-  Copyright (c) 2011-2015 Sungeun K. Jeon
-  Copyright (c) 2009-2011 Simen Svale Skogsrud
-  
-  Grbl is free software: you can redistribute it and/or modify
+  PiBotGrbl-Firmware is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Grbl is distributed in the hope that it will be useful,
+  At the same time you have to follow the rules of PiBot.
+
+  PiBotGRBL-Firmware is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+  
+   You should have received a copy of both the GNU General Public License 
+   and PiBot License along with PiBot-Firmware.  
+   If not, see <http://www.gnu.org/licenses/> and <http://www.pibot.com/>.
 
-  You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
-*/
+  PiBotGRBL-Firmware is based on the official GRBL. We change it for the goal
+  of easy use and configuration. It compatible with both of orignal GRBL settings 
+  and PiBot quick setting style.
+
+   Main author: Simen Svale Skogsrud, Sungeun K. Jeon & Thomas Pan
+   
+   mainpage PiBotGRBL-Firmware for Arduino based GRBL
+    Copyright (c) 2009-2011 Simen Svale Skogsrud
+    Copyright (c) 2011-2013 Sungeun K. Jeon
+    Copyright (c) 2014 by Thomas
+*/   
 
 #ifndef motion_control_h
 #define motion_control_h
-
 
 #define HOMING_CYCLE_LINE_NUMBER -1
 
@@ -36,14 +46,14 @@ void mc_line(float *target, float feed_rate, uint8_t invert_feed_rate);
 
 // Execute an arc in offset mode format. position == current xyz, target == target xyz, 
 // offset == offset from current xyz, axis_XXX defines circle plane in tool space, axis_linear is
-// the direction of helical travel, radius == circle radius, is_clockwise_arc boolean. Used
+// the direction of helical travel, radius == circle radius, isclockwise boolean. Used
 // for vector transformation direction.
 #ifdef USE_LINE_NUMBERS
 void mc_arc(float *position, float *target, float *offset, float radius, float feed_rate, 
-  uint8_t invert_feed_rate, uint8_t axis_0, uint8_t axis_1, uint8_t axis_linear, uint8_t is_clockwise_arc, int32_t line_number);
+  uint8_t invert_feed_rate, uint8_t axis_0, uint8_t axis_1, uint8_t axis_linear, int32_t line_number);
 #else
 void mc_arc(float *position, float *target, float *offset, float radius, float feed_rate,
-  uint8_t invert_feed_rate, uint8_t axis_0, uint8_t axis_1, uint8_t axis_linear, uint8_t is_clockwise_arc);
+  uint8_t invert_feed_rate, uint8_t axis_0, uint8_t axis_1, uint8_t axis_linear);
 #endif
   
 // Dwell for a specific number of seconds
@@ -54,11 +64,9 @@ void mc_homing_cycle();
 
 // Perform tool length probe cycle. Requires probe switch.
 #ifdef USE_LINE_NUMBERS
-void mc_probe_cycle(float *target, float feed_rate, uint8_t invert_feed_rate, uint8_t is_probe_away,
-  uint8_t is_no_error, int32_t line_number);
+void mc_probe_cycle(float *target, float feed_rate, uint8_t invert_feed_rate, int32_t line_number);
 #else
-void mc_probe_cycle(float *target, float feed_rate, uint8_t invert_feed_rate, uint8_t is_probe_away,
-  uint8_t is_no_error);
+void mc_probe_cycle(float *target, float feed_rate, uint8_t invert_feed_rate);
 #endif
 
 // Performs system reset. If in motion state, kills all motion and sets system alarm.
